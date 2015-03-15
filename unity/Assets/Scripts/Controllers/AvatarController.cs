@@ -24,12 +24,16 @@ public class AvatarController : MonoBehaviour {
         switch (_WalkingDirection) {
             case Direction.LEFT:
                 if (_TargetX < transform.position.x) {
-                    GetComponent<Rigidbody2D>().velocity = Vector2.right * Consts.AvatarSpeed * -1;
+                    SetAvatarXSpeed(Consts.AvatarSpeed * -1);
+                } else {
+                    SetAvatarXSpeed(0f);
                 }
                 break;
             case Direction.RIGHT:
                 if (_TargetX > transform.position.x) {
-                    GetComponent<Rigidbody2D>().velocity = Vector2.right * Consts.AvatarSpeed;
+                    SetAvatarXSpeed(Consts.AvatarSpeed);
+                } else {
+                    SetAvatarXSpeed(0f);
                 }
                 break;
         }
@@ -47,5 +51,9 @@ public class AvatarController : MonoBehaviour {
 
     private void OnCollisionWithPlatform() {
         _WalkingDirection = Direction.STILL;
+    }
+
+    private void SetAvatarXSpeed(float speed) {
+        GetComponent<Rigidbody2D>().velocity = new Vector2(speed, GetComponent<Rigidbody2D>().velocity.y);
     }
 }

@@ -9,6 +9,6 @@ public class Consts : MonoBehaviour {
     public const float ToggleChainDelay = 0.2f;
     public const float ToggleChainDelayReset = 1.0f; //should always be 2 * ToggleChainDelay
     public const float PiPieceJumpForce = 10f;
-    public const float AvatarSpeed = 3f;
+    public const float AvatarSpeed = 5f;
 
 }

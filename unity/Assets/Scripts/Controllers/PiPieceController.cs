@@ -11,9 +11,6 @@ public class PiPieceController : MonoBehaviour {
 
     protected bool _CanToggleViaChain = true;
 
-    public void Update() {
-    }
-
     public void ToggleViaChain() {
         if (_CanToggleViaChain) {
             StartCoroutine(ToggleViaAfterWait());
