@@ -9,13 +9,9 @@ public class PiPieceController : MonoBehaviour {
     public Collider2D LineBounds;
     public Collider2D CircleBounds;
 
-    private bool _CanToggleViaChain = true;
+    protected bool _CanToggleViaChain = true;
 
     public void Update() {
-    }
-
-    public void OnMouseDown() {
-        Toggle();
     }
 
     public void ToggleViaChain() {
@@ -25,15 +21,16 @@ public class PiPieceController : MonoBehaviour {
         }
     }
 
-    private void Toggle() {
+    protected void Toggle() {
         Chain(); //Need to chain first to get the current neighbours
 
         Circle.SetActive(!Circle.activeSelf);
         Line.SetActive(!Line.activeSelf);
-        GetComponent<Rigidbody2D>().AddForce(Vector2.up * Consts.PiPieceJumpForce, ForceMode2D.Impulse);
+        GetComponent<Rigidbody2D>().
+            AddForce(Vector2.up * Consts.PiPieceJumpForce, ForceMode2D.Impulse);
     }
 
-    private void Chain() {
+    protected void Chain() {
         ChainHaitus();
         List<PiPieceController> neighbours = GetNeighbours();
 
@@ -42,7 +39,7 @@ public class PiPieceController : MonoBehaviour {
         }
     }
 
-    private List<PiPieceController> GetNeighbours() {
+    protected List<PiPieceController> GetNeighbours() {
         List<PiPieceController> neighbours = new List<PiPieceController>();
 
         Collider2D thisCollider = GetRelevantBoundsCollider();
@@ -55,22 +52,22 @@ public class PiPieceController : MonoBehaviour {
         return neighbours;
     }
 
-    private void ChainHaitus() {
+    protected void ChainHaitus() {
         _CanToggleViaChain = false;
         StartCoroutine(ResetCanToggleViaChainAfterWait());
     }
 
-    private IEnumerator ToggleViaAfterWait() {
+    protected IEnumerator ToggleViaAfterWait() {
         yield return new WaitForSeconds(Consts.ToggleChainDelay);
         Toggle();
     }
 
-    private IEnumerator ResetCanToggleViaChainAfterWait() {
+    protected IEnumerator ResetCanToggleViaChainAfterWait() {
         yield return new WaitForSeconds(Consts.ToggleChainDelayReset);
         _CanToggleViaChain = true;
     }
 
-    private Collider2D GetRelevantBoundsCollider() {
+    protected Collider2D GetRelevantBoundsCollider() {
         if (Circle.activeSelf) {
             return CircleBounds;
         } else if (Line.activeSelf) {
