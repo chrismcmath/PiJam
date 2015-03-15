@@ -6,8 +6,8 @@ public class PiPieceController : MonoBehaviour {
     public GameObject Circle;
     public GameObject Line;
 
-    public PiPieceNeighbourDetector LineNeighbourhoodDetector;
-    public PiPieceNeighbourDetector CircleNeighbourhoodDetector;
+    public Collider2D LineBounds;
+    public Collider2D CircleBounds;
 
     private bool _CanToggleViaChain = true;
 
@@ -20,7 +20,7 @@ public class PiPieceController : MonoBehaviour {
 
     public void ToggleViaChain() {
         if (_CanToggleViaChain) {
-            Toggle();
+            StartCoroutine(ToggleViaAfterWait());
             ChainHaitus();
         }
     }
@@ -43,12 +43,16 @@ public class PiPieceController : MonoBehaviour {
     }
 
     private List<PiPieceController> GetNeighbours() {
-        if (Circle.activeSelf) {
-            return CircleNeighbourhoodDetector.Neighbours;
-        } else if (Line.activeSelf) {
-            return LineNeighbourhoodDetector.Neighbours;
+        List<PiPieceController> neighbours = new List<PiPieceController>();
+
+        Collider2D thisCollider = GetRelevantBoundsCollider();
+        List<GameObject> colliderGOs = new List<GameObject>(GameObject.FindGameObjectsWithTag(Consts.TAG_PIPIECE_COLLIDER));
+        foreach (GameObject c in colliderGOs) {
+            if (thisCollider.bounds.Intersects(c.GetComponent<Collider2D>().bounds)) {
+                neighbours.Add(c.GetComponentInParent<PiPieceController>());
+            }
         }
-        return null;
+        return neighbours;
     }
 
     private void ChainHaitus() {
@@ -64,5 +68,14 @@ public class PiPieceController : MonoBehaviour {
     private IEnumerator ResetCanToggleViaChainAfterWait() {
         yield return new WaitForSeconds(Consts.ToggleChainDelayReset);
         _CanToggleViaChain = true;
+    }
+
+    private Collider2D GetRelevantBoundsCollider() {
+        if (Circle.activeSelf) {
+            return CircleBounds;
+        } else if (Line.activeSelf) {
+            return LineBounds;
+        }
+        return null;
     }
 }
