@@ -3,6 +3,7 @@ using System.Collections;
 
 public class ClickController : MonoBehaviour {
     public static string PLAYER_INPUT = "PLAYER_INPUT";
+
     public void OnMouseDown() {
         CastRayToWorld();
     }

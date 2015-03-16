@@ -36,10 +36,8 @@ public class PiPieceController : MonoBehaviour {
         switch(_State) {
             case PiPieceState.TO_LINE:
                 fraction = 1f - (_TransformCounter / Consts.PiPieceTransformPeriod);
-                Debug.Log("before = " + _TransformCounter);
                 _TransformCounter -= Time.fixedDeltaTime;
                 LineCollider.size = new Vector2(1f, LineColliderWidth * fraction);
-                Debug.Log("_TransformCounter: " + _TransformCounter + " fraction: " + fraction + " LineCollider.size: " + LineCollider.size);
                 if (_TransformCounter < 0f) {
                     _State = PiPieceState.LINE;
                     LineCollider.size = new Vector2(1f, LineColliderWidth);
@@ -49,7 +47,6 @@ public class PiPieceController : MonoBehaviour {
                 fraction = 1f - (_TransformCounter / Consts.PiPieceTransformPeriod);
                 _TransformCounter -= Time.fixedDeltaTime;
                 CircleCollider.radius = CircleColliderRadius * fraction;
-                Debug.Log("_TransformCounter: " + _TransformCounter + " fraction: " + fraction + " LineCollider.size: " + LineCollider.size);
                 if (_TransformCounter < 0f) {
                     _State = PiPieceState.CIRCLE;
                     CircleCollider.radius = CircleColliderRadius;
