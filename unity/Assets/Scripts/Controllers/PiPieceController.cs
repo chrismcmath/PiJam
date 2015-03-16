@@ -3,13 +3,60 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class PiPieceController : MonoBehaviour {
+    public enum PiPieceState {LINE=0,CIRCLE,TO_CIRCLE,TO_LINE};
+
+    public float LineColliderWidth = 0.1f;
+    public float CircleColliderRadius = 0.5f;
+
     public GameObject Circle;
     public GameObject Line;
+
+    public BoxCollider2D LineCollider;
+    public CircleCollider2D CircleCollider;
 
     public Collider2D LineBounds;
     public Collider2D CircleBounds;
 
     protected bool _CanToggleViaChain = true;
+    protected PiPieceState _State = PiPieceState.LINE;
+    protected float _TransformCounter = 0f;
+    protected ParticleSystem _Particles;
+
+    public void Start() {
+        _Particles = GetComponentInChildren<ParticleSystem>();
+        if (Circle.activeInHierarchy) {
+            _State = PiPieceState.CIRCLE;
+        } else {
+            _State = PiPieceState.LINE;
+        }
+    }
+
+    public void FixedUpdate() {
+        float fraction;
+        switch(_State) {
+            case PiPieceState.TO_LINE:
+                fraction = 1f - (_TransformCounter / Consts.PiPieceTransformPeriod);
+                Debug.Log("before = " + _TransformCounter);
+                _TransformCounter -= Time.fixedDeltaTime;
+                LineCollider.size = new Vector2(1f, LineColliderWidth * fraction);
+                Debug.Log("_TransformCounter: " + _TransformCounter + " fraction: " + fraction + " LineCollider.size: " + LineCollider.size);
+                if (_TransformCounter < 0f) {
+                    _State = PiPieceState.LINE;
+                    LineCollider.size = new Vector2(1f, LineColliderWidth);
+                }
+                break;
+            case PiPieceState.TO_CIRCLE:
+                fraction = 1f - (_TransformCounter / Consts.PiPieceTransformPeriod);
+                _TransformCounter -= Time.fixedDeltaTime;
+                CircleCollider.radius = CircleColliderRadius * fraction;
+                Debug.Log("_TransformCounter: " + _TransformCounter + " fraction: " + fraction + " LineCollider.size: " + LineCollider.size);
+                if (_TransformCounter < 0f) {
+                    _State = PiPieceState.CIRCLE;
+                    CircleCollider.radius = CircleColliderRadius;
+                }
+                break;
+        }
+    }
 
     public void ToggleViaChain() {
         if (_CanToggleViaChain) {
@@ -19,12 +66,14 @@ public class PiPieceController : MonoBehaviour {
     }
 
     protected void Toggle() {
+        _Particles.Play();
         Chain(); //Need to chain first to get the current neighbours
 
-        Circle.SetActive(!Circle.activeSelf);
-        Line.SetActive(!Line.activeSelf);
-        GetComponent<Rigidbody2D>().
-            AddForce(Vector2.up * Consts.PiPieceJumpForce, ForceMode2D.Impulse);
+        if (_State == PiPieceState.LINE || _State == PiPieceState.TO_LINE) {
+            ToCircle();
+        } else if (_State == PiPieceState.CIRCLE || _State == PiPieceState.TO_CIRCLE) {
+            ToLine();
+        }
     }
 
     protected void Chain() {
@@ -71,5 +120,25 @@ public class PiPieceController : MonoBehaviour {
             return LineBounds;
         }
         return null;
+    }
+    
+    protected void ToCircle() {
+        _TransformCounter = Consts.PiPieceTransformPeriod;
+        _State = PiPieceState.TO_CIRCLE;
+
+        CircleCollider.radius = 0f;
+
+        Circle.SetActive(true);
+        Line.SetActive(false);
+    }
+
+    protected void ToLine() {
+        _TransformCounter = Consts.PiPieceTransformPeriod;
+        _State = PiPieceState.TO_LINE;
+
+        LineCollider.size = new Vector2(1f, 0f);
+
+        Circle.SetActive(false);
+        Line.SetActive(true);
     }
 }

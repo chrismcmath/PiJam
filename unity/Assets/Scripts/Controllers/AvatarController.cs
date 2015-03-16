@@ -7,13 +7,16 @@ public class AvatarController : MonoBehaviour {
     public static string AVATAR_COLLIDED_WITH_PLATFORM = "AVATAR_COLLIDED_WITH_PLATFORM";
 
     private float _TargetX = 0f;
-    public Direction _WalkingDirection = Direction.RIGHT;
+    private Direction _WalkingDirection = Direction.RIGHT;
+    private Animator _Animator;
 
     public void Awake() {
         _TargetX = transform.position.x;
 
         Messenger<Vector3>.AddListener(ClickController.PLAYER_INPUT, OnPlayerInput);
         Messenger.AddListener(AVATAR_COLLIDED_WITH_PLATFORM, OnCollisionWithPlatform);
+
+        _Animator = GetComponentInChildren<Animator>();
     }
 
     public void OnDestroy() {
@@ -54,6 +57,13 @@ public class AvatarController : MonoBehaviour {
     }
 
     private void SetAvatarXSpeed(float speed) {
+        _Animator.SetFloat("speed", Mathf.Abs(speed));
         GetComponent<Rigidbody2D>().velocity = new Vector2(speed, GetComponent<Rigidbody2D>().velocity.y);
+
+        if (speed > 0f) {
+            transform.localScale = new Vector3(1f, 1f, 1f);
+        } else if (speed < 0f) {
+            transform.localScale = new Vector3(-1f, 1f, 1f);
+        }
     }
 }
