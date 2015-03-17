@@ -19,6 +19,10 @@ public class PiPieceController : MonoBehaviour {
 
     protected bool _CanToggleViaChain = true;
     protected PiPieceState _State = PiPieceState.LINE;
+    public PiPieceState State {
+        get { return _State; }
+    }
+
     protected float _TransformCounter = 0f;
     protected ParticleSystem _Particles;
 
@@ -121,9 +125,9 @@ public class PiPieceController : MonoBehaviour {
     
     protected void ToCircle() {
         _TransformCounter = Consts.PiPieceTransformPeriod;
-        _State = PiPieceState.TO_CIRCLE;
+        _State = PiPieceState.CIRCLE;
 
-        CircleCollider.radius = 0f;
+        //CircleCollider.radius = 0f;
 
         Circle.SetActive(true);
         Line.SetActive(false);
@@ -131,9 +135,9 @@ public class PiPieceController : MonoBehaviour {
 
     protected void ToLine() {
         _TransformCounter = Consts.PiPieceTransformPeriod;
-        _State = PiPieceState.TO_LINE;
+        _State = PiPieceState.LINE;
 
-        LineCollider.size = new Vector2(1f, 0f);
+        //LineCollider.size = new Vector2(1f, 0f);
 
         Circle.SetActive(false);
         Line.SetActive(true);

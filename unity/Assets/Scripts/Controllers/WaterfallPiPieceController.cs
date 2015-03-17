@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class WaterfallPiPieceController : InteractablePiPieceController {
     public void Update() {
-        if (transform.localPosition.y < -50f) {
+        if (transform.localPosition.y < -17f) {
             Destroy(gameObject);
         }
     }
