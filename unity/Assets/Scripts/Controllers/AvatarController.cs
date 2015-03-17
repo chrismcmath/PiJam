@@ -14,22 +14,24 @@ public class AvatarController : MonoBehaviour {
     private float _TargetX = 0f;
     private Direction _WalkingDirection = Direction.RIGHT;
     private Animator _Animator;
+    private ParticleSystem _Particles;
 
     public void Awake() {
         _TargetX = transform.position.x;
 
         Messenger<Vector3>.AddListener(ClickController.PLAYER_INPUT, OnPlayerInput);
         Messenger.AddListener(AVATAR_COLLIDED_WITH_PLATFORM, OnCollisionWithPlatform);
-        Messenger<PiPieceController>.AddListener(InteractablePiPieceController.PI_PIECE_CLICKED, OnPiPieceClicked);
+        Messenger<PiPieceController, PiPieceController.PiPieceState>.AddListener(InteractablePiPieceController.PI_PIECE_CLICKED, OnPiPieceClicked);
 
         _Animator = GetComponentInChildren<Animator>();
-        PiView.SetActive(HasPi);
+        _Particles = PiView.GetComponentInChildren<ParticleSystem>();
+        StartCoroutine(ActivateViewAfterWait());
     }
 
     public void OnDestroy() {
         Messenger<Vector3>.RemoveListener(ClickController.PLAYER_INPUT, OnPlayerInput);
         Messenger.RemoveListener(AVATAR_COLLIDED_WITH_PLATFORM, OnCollisionWithPlatform);
-        Messenger<PiPieceController>.RemoveListener(InteractablePiPieceController.PI_PIECE_CLICKED, OnPiPieceClicked);
+        Messenger<PiPieceController, PiPieceController.PiPieceState>.RemoveListener(InteractablePiPieceController.PI_PIECE_CLICKED, OnPiPieceClicked);
     }
 
     public void Update() {
@@ -71,13 +73,29 @@ public class AvatarController : MonoBehaviour {
         SetAvatarXSpeed(0f);
     }
 
-    private void OnPiPieceClicked(PiPieceController piPiece) {
-        if (piPiece.State == PiPieceController.PiPieceState.CIRCLE) {
+    private void OnPiPieceClicked(PiPieceController piPiece, PiPieceController.PiPieceState state) {
+        GameObject beamGO = Instantiate(Resources.Load<GameObject>("Prefabs/pi_beam"));
+        //beamGO.transform.position = transform.position;
+        beamGO.transform.position = new Vector2(-100f, 0f);
+        PiBeamController beam = beamGO.GetComponent<PiBeamController>();
+
+        if (state == PiPieceController.PiPieceState.CIRCLE) {
+            beam.SetBeam(transform, piPiece.transform);
             HasPi = false;
-        } else if (piPiece.State == PiPieceController.PiPieceState.LINE) {
+        } else if (state == PiPieceController.PiPieceState.LINE) {
+            beam.SetBeam(piPiece.transform, transform);
             HasPi = true;
         }
-        PiView.SetActive(HasPi);
+        StartCoroutine(ActivateViewAfterWait());
+    }
+
+    private IEnumerator ActivateViewAfterWait() {
+        yield return new WaitForSeconds(Consts.BeamPeriod);
+        if (HasPi) {
+            _Particles.Play();
+        } else {
+            _Particles.Stop();
+        }
     }
 
     private void SetAvatarXSpeed(float speed) {
