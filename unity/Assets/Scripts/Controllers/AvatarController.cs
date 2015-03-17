@@ -52,8 +52,14 @@ public class AvatarController : MonoBehaviour {
         }
     }
 
+    public void OnCollisionEnter2D(Collision2D coll) {
+        Debug.Log("OnCollisionEnter2D " + coll.gameObject.name);
+    }
+
     private void OnCollisionWithPlatform() {
+        //Debug.Log("OnCollisionWithPlatform");
         _WalkingDirection = Direction.STILL;
+        SetAvatarXSpeed(0f);
     }
 
     private void SetAvatarXSpeed(float speed) {

@@ -21,7 +21,6 @@ public class WaterfallController : MonoBehaviour {
             return;
         }
 
-        Debug.Log("SpawnPP");
         GameObject prefab = Instantiate(Resources.Load<GameObject>("Prefabs/waterfall_pi_piece"));
         prefab.transform.parent = transform;
         prefab.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
