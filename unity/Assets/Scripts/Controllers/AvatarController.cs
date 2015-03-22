@@ -51,6 +51,10 @@ public class AvatarController : MonoBehaviour {
                 }
                 break;
         }
+
+        if (Input.GetKeyDown("r")) {
+            LoadCheckpoint();
+        }
     }
 
     private void OnPlayerInput(Vector3 position) {
@@ -60,6 +64,12 @@ public class AvatarController : MonoBehaviour {
         } else if (transform.position.x < position.x) {
             _WalkingDirection = Direction.RIGHT;
             _TargetX = position.x;
+        }
+    }
+
+    public void OnTriggerEnter2D(Collider2D coll) {
+        if (coll.gameObject.layer == LayerMask.NameToLayer(Consts.LAYER_CHECKPOINT)) {
+            CheckCheckpoint(coll.gameObject.GetComponentInParent<CheckpointController>());
         }
     }
 
@@ -91,6 +101,10 @@ public class AvatarController : MonoBehaviour {
 
     private IEnumerator ActivateViewAfterWait() {
         yield return new WaitForSeconds(Consts.BeamPeriod);
+        ActiveView();
+    }
+
+    private void ActiveView() {
         if (HasPi) {
             _Particles.Play();
         } else {
@@ -107,5 +121,30 @@ public class AvatarController : MonoBehaviour {
         } else if (speed < 0f) {
             ViewRoot.localScale = new Vector3(-1f, 1f, 1f);
         }
+    }
+
+    private void CheckCheckpoint(CheckpointController checkpoint) {
+        CheckpointController last = CheckpointModel.LatestCheckpoint;
+        if (last == null || checkpoint.ID > last.ID) {
+            CheckpointModel.LatestCheckpoint = checkpoint;
+        }
+    }
+
+    private void LoadCheckpoint() {
+        CheckpointController last = CheckpointModel.LatestCheckpoint;
+
+        if (last == null) return;
+
+        HasPi = last.HasPi;
+        transform.position = last.Position.position;
+        if (last.FacingRight) {
+            ViewRoot.localScale = new Vector3(1f, 1f, 1f);
+        } else {
+            ViewRoot.localScale = new Vector3(-1f, 1f, 1f);
+        }
+
+        _WalkingDirection = Direction.STILL;
+        SetAvatarXSpeed(0f);
+        ActiveView();
     }
 }

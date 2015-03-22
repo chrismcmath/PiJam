@@ -92,7 +92,10 @@ public class PiPieceController : MonoBehaviour {
         Collider2D thisCollider = GetRelevantBoundsCollider();
         List<GameObject> colliderGOs = new List<GameObject>(GameObject.FindGameObjectsWithTag(Consts.TAG_PIPIECE_COLLIDER));
         foreach (GameObject c in colliderGOs) {
-            if (thisCollider.bounds.Intersects(c.GetComponent<Collider2D>().bounds)) {
+            if (c.GetComponent<Collider2D>() == null) {
+                Debug.Log("well how the hell did this happen? " + c.name);
+            }
+            if (c.GetComponent<Collider2D>() != null && thisCollider.bounds.Intersects(c.GetComponent<Collider2D>().bounds)) {
                 neighbours.Add(c.GetComponentInParent<PiPieceController>());
             }
         }

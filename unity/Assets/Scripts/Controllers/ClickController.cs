@@ -12,5 +12,8 @@ public class ClickController : MonoBehaviour {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);    
         Vector3 point = ray.origin + (ray.direction);    
         Messenger<Vector3>.Broadcast(PLAYER_INPUT, point);
+
+        GameObject pointClickGO = Instantiate(Resources.Load<GameObject>("Prefabs/point"));
+        pointClickGO.transform.position = point;
     }
 }
