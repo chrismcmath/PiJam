@@ -17,6 +17,9 @@ public class PiPieceController : MonoBehaviour {
     public Collider2D LineBounds;
     public Collider2D CircleBounds;
 
+    public AudioSource CircleAudio;
+    public AudioSource LineAudio;
+
     protected bool _CanToggleViaChain = true;
     protected PiPieceState _State = PiPieceState.LINE;
     public PiPieceState State {
@@ -131,6 +134,7 @@ public class PiPieceController : MonoBehaviour {
         _State = PiPieceState.CIRCLE;
 
         //CircleCollider.radius = 0f;
+        Play(CircleAudio);
 
         Circle.SetActive(true);
         Line.SetActive(false);
@@ -141,8 +145,15 @@ public class PiPieceController : MonoBehaviour {
         _State = PiPieceState.LINE;
 
         //LineCollider.size = new Vector2(1f, 0f);
+        Play(LineAudio);
 
         Circle.SetActive(false);
         Line.SetActive(true);
+    }
+
+    protected void Play(AudioSource src) {
+        if (src != null) {
+            src.Play();
+        }
     }
 }
